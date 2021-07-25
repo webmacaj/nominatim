@@ -2,6 +2,8 @@
 
 namespace Webmacaj\Nominatim;
 
+use Webmacaj\Nominatim\Provider\Client;
+
 class NominatimApi
 {
     /**
@@ -11,34 +13,35 @@ class NominatimApi
      */
     protected $_outputFormat;
 
+    /** @var Client */
+    protected $_client;
+
     /**
      * NominatimApi constructor.
      *
-     * @param string $outputFormat Output format of retrieved data. Allowed options: [xml|json|jsonv2|geojson|geocodejson]. Default: json
+     * @param string $outputFormat Optional. Output format of retrieved data. Allowed options: [xml|json|jsonv2|geojson|geocodejson]. Default: json
+     * @param string|null $endpoint Optional. Custom nominatim API endpoint.
      */
-    public function __construct(string $outputFormat = 'json')
+    public function __construct(string $outputFormat = 'json', string $endpoint = null)
     {
+        $this->_client = new Client();
+
+        if ($endpoint) {
+            $this->_client->setEndpoint($endpoint);
+        }
+
         $this->_outputFormat = $outputFormat;
     }
 
     /**
-     * Search location by string query.
+     * Search location by structured or string query.
      *
-     * @param string $query
+     * @param array $query Structured lookup data. Accepted keys: [query|street|city|county|state|country|postalcode]
+     * If "query" key is used, all other keys will be omitted from request as it is not recommended to combine them.
      *
      * @return array
      */
-    public function search(string $query)
-    {
-
-    }
-
-    /**
-     * Search location by structured data
-     *
-     * @param array<string, string|int> $data Structured lookup data. Accepted keys: [street|city|county|state|country|postalcode]
-     */
-    public function searchStructured(array $data)
+    public function search(array $query)
     {
 
     }

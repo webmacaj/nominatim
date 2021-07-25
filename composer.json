@@ -13,9 +13,8 @@
       "Webmacaj\\Nominatim\\": "src/"
     }
   },
-  "config": {
-    "platform": {
-      "php": ">7.1"
-    }
+  "require": {
+    "php": "~7.1",
+    "guzzlehttp/guzzle": "^7.3"
   }
 }
