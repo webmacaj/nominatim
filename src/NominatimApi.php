@@ -2,6 +2,7 @@
 
 namespace Webmacaj\Nominatim;
 
+use Webmacaj\Nominatim\Formatter\FormatterInterface;
 use Webmacaj\Nominatim\Provider\Client;
 
 class NominatimApi
@@ -12,6 +13,13 @@ class NominatimApi
      * @var string
      */
     protected $_outputFormat;
+
+    /**
+     * Formatter instance.
+     *
+     * @var FormatterInterface
+     */
+    protected $_formatter;
 
     /** @var Client */
     protected $_client;
@@ -24,13 +32,15 @@ class NominatimApi
      */
     public function __construct(string $outputFormat = 'json', string $endpoint = null)
     {
-        $this->_client = new Client();
+        $this->_client = new Client($outputFormat);
 
         if ($endpoint) {
             $this->_client->setEndpoint($endpoint);
         }
 
         $this->_outputFormat = $outputFormat;
+        $formatterClass = 'Webmacaj\Nominatim\Formatter\\' . \ucfirst($outputFormat) . 'Formatter';
+        $this->_formatter = new $formatterClass();
     }
 
     /**
@@ -43,7 +53,17 @@ class NominatimApi
      */
     public function search(array $query)
     {
+        if (isset($query['query']) && $query['query']) {
+            $query = ['q' => $query['query']];
+        }
 
+        $response = $this->_client->request('search.php', $query);
+
+        if (!$response) {
+            return [];
+        }
+
+        return $this->_processResponse($response);
     }
 
     public function reverse()
@@ -94,5 +114,17 @@ class NominatimApi
     public function setOutputFormat(string $outputFormat): void
     {
         $this->_outputFormat = $outputFormat;
+    }
+
+    /**
+     * Process API response.
+     *
+     * @param mixed $response
+     *
+     * @return array
+     */
+    protected function _processResponse($response): array
+    {
+        return $this->_formatter->format($response);
     }
 }

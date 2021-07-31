@@ -9,7 +9,6 @@ class JsonFormatter implements FormatterInterface
      */
     public function format(string $data): ?array
     {
-        // TODO: Implement format() method.
+        return \json_decode($data, true);
     }
-
 }

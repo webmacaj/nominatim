@@ -18,11 +18,16 @@ class Client
     /**
      * Client constructor.
      */
-    public function __construct()
+    public function __construct(string $format)
     {
         $this->_client = new Http([
-            'base_uri' => $this->_endpoint
+            'base_uri' => $this->_endpoint,
+            'headers' => [
+                'Accept-Encoding' => 'gzip, deflate'
+            ]
         ]);
+
+        $this->_format = $format;
     }
 
     /**
@@ -35,6 +40,8 @@ class Client
      */
     public function request(string $path, array $queryData)
     {
+        $queryData += ['format' => $this->_format, 'addressdetails' => 1];
+
         try {
             $response = $this->_client->get(\ltrim($path, '/'), [
                 'query' => $queryData
