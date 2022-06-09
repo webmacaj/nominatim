@@ -38,7 +38,7 @@ class Client
      *
      * @return string|bool Response string or false on failure. Errors can be retrieved by calling Client::getErrors().
      */
-    public function request(string $path, array $queryData)
+    public function request(string $path, array $queryData = [])
     {
         $queryData += ['format' => $this->_format, 'addressdetails' => 1];
 

@@ -51,13 +51,13 @@ class NominatimApi
      *
      * @return array
      */
-    public function search(array $query)
+    public function search(array $query): array
     {
         if (isset($query['query']) && $query['query']) {
             $query = ['q' => $query['query']];
         }
 
-        $response = $this->_client->request('search.php', $query);
+        $response = $this->_client->request('search', $query);
 
         if (!$response) {
             return [];
@@ -66,34 +66,97 @@ class NominatimApi
         return $this->_processResponse($response);
     }
 
-    public function reverse()
+    public function reverse(float $lat, float $lon, array $options = []): array
     {
+        $response = $this->_client->request('reverse', \array_merge([
+            'lat' => $lat,
+            'lon' => $lon
+        ], $options));
 
+        if (!$response) {
+            return [];
+        }
+
+        return $this->_processResponse($response);
     }
 
-    public function lookup()
+    public function addressLookup(array $osmIds, array $options = []): array
     {
+        $response = $this->_client->request('lookup', \array_merge([
+            'osm_ids' => \implode(',', $osmIds)
+        ], $options));
 
+        if (!$response) {
+            return [];
+        }
+
+        return $this->_processResponse($response);
     }
 
-    public function status()
+    public function details(string $osmType, int $osmId, string $class = null): array
     {
+        $requestData = [
+            'osm_type' => $osmType,
+            'osm_id' => $osmId
+        ];
 
+        if ($class) {
+            $requestData['class'] = $class;
+        }
+
+        $response = $this->_client->request('details', $requestData);
+
+        if (!$response) {
+            return [];
+        }
+
+        return $this->_processResponse($response);
     }
 
-    public function deletable()
+    public function placeDetails(int $placeId): array
     {
+        $response = $this->_client->request('details', [
+            'place_id' => $placeId
+        ]);
 
+        if (!$response) {
+            return [];
+        }
+
+        return $this->_processResponse($response);
     }
 
-    public function polygons()
+    public function status(): bool
     {
+        $response = $this->_client->request('status');
 
+        if (!$response) {
+            return false;
+        }
+
+        return true;
     }
 
-    public function details()
+    public function deletable(): array
     {
+        $response = $this->_client->request('deletable');
 
+        if (!$response) {
+            return [];
+        }
+
+        return $this->_processResponse($response);
+    }
+
+    public function polygons(): array
+    {
+        $response = $this->_client->request('polygons');
+
+        if (!$response) {
+            return [];
+        }
+
+        return $this->_processResponse($response);
     }
 
     /**
