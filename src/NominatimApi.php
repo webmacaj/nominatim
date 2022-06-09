@@ -66,11 +66,20 @@ class NominatimApi
         return $this->_processResponse($response);
     }
 
-    public function reverse(float $lat, float $lon, array $options = []): array
+    /**
+     * Reverse lookup address data by lat/lon coordinates.
+     *
+     * @param float $lat
+     * @param float $long
+     * @param array $options
+     *
+     * @return array
+     */
+    public function reverse(float $lat, float $long, array $options = []): array
     {
         $response = $this->_client->request('reverse', \array_merge([
             'lat' => $lat,
-            'lon' => $lon
+            'lon' => $long
         ], $options));
 
         if (!$response) {
@@ -80,6 +89,14 @@ class NominatimApi
         return $this->_processResponse($response);
     }
 
+    /**
+     * Address lookup by OSM object ID.
+     *
+     * @param array $osmIds Array of OSM object IDs prefixed by their type letters [N|W|R].
+     * @param array $options
+     *
+     * @return array
+     */
     public function addressLookup(array $osmIds, array $options = []): array
     {
         $response = $this->_client->request('lookup', \array_merge([
@@ -93,6 +110,15 @@ class NominatimApi
         return $this->_processResponse($response);
     }
 
+    /**
+     * Get OSM object details by ID and type.
+     *
+     * @param string      $osmType
+     * @param int         $osmId
+     * @param string|null $class
+     *
+     * @return array
+     */
     public function details(string $osmType, int $osmId, string $class = null): array
     {
         $requestData = [
@@ -113,6 +139,13 @@ class NominatimApi
         return $this->_processResponse($response);
     }
 
+    /**
+     * Get OSM object details by place ID.
+     *
+     * @param int $placeId
+     *
+     * @return array
+     */
     public function placeDetails(int $placeId): array
     {
         $response = $this->_client->request('details', [
@@ -126,6 +159,11 @@ class NominatimApi
         return $this->_processResponse($response);
     }
 
+    /**
+     * Ping nominatim API to check if it is alive.
+     *
+     * @return bool
+     */
     public function status(): bool
     {
         $response = $this->_client->request('status');
@@ -137,6 +175,11 @@ class NominatimApi
         return true;
     }
 
+    /**
+     * Get deleted objects held back in Nominatim.
+     *
+     * @return array
+     */
     public function deletable(): array
     {
         $response = $this->_client->request('deletable');
@@ -148,6 +191,11 @@ class NominatimApi
         return $this->_processResponse($response);
     }
 
+    /**
+     * Get list of broken polygons.
+     *
+     * @return array
+     */
     public function polygons(): array
     {
         $response = $this->_client->request('polygons');
